@@ -1,4 +1,4 @@
-name: Terraform Apply and Push to ECR 
+name: Terraform Apply and Push to ECR
 
 on:
   push:
@@ -19,12 +19,17 @@ jobs:
         run: |
           repositories=()
           while IFS= read -r line; do
-            # Get image name without tag, replace '/' and ':' to '-'
+            # Get image name without tag, replace '/' and ':' with '-'
             name=$(echo "$line" | cut -d':' -f1 | tr '/:' '-')
             repositories+=("\"$name\"")
           done < docker-images.txt
-          echo "repositories = [${repositories[*]}]" > terraform/terraform.tfvars
-          echo "REPO_LIST=${repositories[*]}" >> $GITHUB_ENV
+
+          # Join array elements with commas for terraform syntax
+          joined_repos=$(IFS=, ; echo "${repositories[*]}")
+
+          # Write terraform.tfvars with valid syntax
+          echo "repositories = [${joined_repos}]" > terraform/terraform.tfvars
+          echo "REPO_LIST=${joined_repos}" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3

@@ -3,7 +3,7 @@ name: Terraform Apply and Push to ECR
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
